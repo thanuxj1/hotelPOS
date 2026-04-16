@@ -15,9 +15,15 @@ app = FastAPI(
 )
 
 # --- Middleware ---
+_cors_origins: list[str] = (
+    [str(o) for o in settings.BACKEND_CORS_ORIGINS]
+    if settings.BACKEND_CORS_ORIGINS
+    else ["http://localhost:3000", "http://127.0.0.1:3000"]
+)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Restrict to specific origins in production
+    allow_origins=_cors_origins,
+    allow_origin_regex=r"https://.*\.onrender\.com",  # catch all Render subdomains
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
