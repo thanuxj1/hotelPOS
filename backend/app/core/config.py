@@ -1,6 +1,6 @@
 from typing import List, Optional, Union
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import AnyHttpUrl, validator
+from pydantic import AnyHttpUrl, field_validator
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Hotel POS"
@@ -14,7 +14,9 @@ class Settings(BaseSettings):
     DEFAULT_TENANT_ID: str = "public"
     
     # Database
-    @validator("DATABASE_URL", pre=True)
+    DATABASE_URL: Optional[str] = None
+
+    @field_validator("DATABASE_URL", mode="before")
     def assemble_db_url(cls, v: Optional[str]) -> str:
         if not v:
             return "postgresql+asyncpg://postgres:postgres@localhost:5432/hotelpos"
@@ -32,7 +34,7 @@ class Settings(BaseSettings):
     # CORS
     BACKEND_CORS_ORIGINS: Union[List[AnyHttpUrl], str] = []
 
-    @validator("BACKEND_CORS_ORIGINS", pre=True)
+    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
