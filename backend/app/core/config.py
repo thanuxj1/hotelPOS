@@ -26,6 +26,15 @@ class Settings(BaseSettings):
             v = v.replace("postgres://", "postgresql+asyncpg://", 1)
         elif v.startswith("postgresql://") and "+asyncpg" not in v:
             v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        
+        # Strip query parameters that are incompatible with asyncpg (e.g. sslmode, channel_binding)
+        if "?" in v:
+            base_url, query_str = v.split("?", 1)
+            params = [p for p in query_str.split("&") if not p.startswith(("sslmode=", "channel_binding="))]
+            if params:
+                v = f"{base_url}?{'&'.join(params)}"
+            else:
+                v = base_url
         return v
 
     # Redis
