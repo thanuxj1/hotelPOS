@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 30 # 30 days
     
     # Multi-tenancy
-    DEFAULT_TENANT_ID: str = "public"
+    DEFAULT_TENANT_ID: str = "demo_hotel"
     
     # Database
     DATABASE_URL: Optional[str] = None
