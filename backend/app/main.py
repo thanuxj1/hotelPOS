@@ -15,6 +15,8 @@ app = FastAPI(
 )
 
 # --- Middleware ---
+app.add_middleware(TenantMiddleware)
+
 _cors_origins: list[str] = (
     [str(o) for o in settings.BACKEND_CORS_ORIGINS]
     if settings.BACKEND_CORS_ORIGINS
@@ -23,12 +25,11 @@ _cors_origins: list[str] = (
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins,
-    allow_origin_regex=r"https://.*\.onrender\.com",  # catch all Render subdomains
+    allow_origin_regex=r"https://.*\.(onrender\.com|vercel\.app|koyeb\.app)",  # catch all Render, Vercel, and Koyeb subdomains
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.add_middleware(TenantMiddleware)
 
 # --- Routers ---
 app.include_router(api_router, prefix=settings.API_V1_STR)
